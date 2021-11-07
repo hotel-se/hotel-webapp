@@ -25,22 +25,59 @@ export default {
   name: 'App',
   components: {
     Search
-  }
+  },
+  data () {
+    return {
+      theme: 'light'
+    }
+  },
+  mounted() {
+    if (localStorage.theme === 'dark') {
+      this.theme = 'dark'
+      document.body.className = 'dark'
+    }
+
+    this.$root.$on('theme-changed', (theme) => {
+      localStorage.theme = theme
+      this.theme = theme
+      
+      if (theme === 'dark') {
+        document.body.className = 'dark'
+      } else {
+        document.body.className = ''
+      }
+    })
+  },
+  watch: {
+    theme(new_theme) {
+      localStorage.theme = new_theme
+    }
+  },
 }
 </script>
 
 <style>
-#app {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
+  #app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
 
-  margin: -10px;
+    margin: -10px;
 
-  font-family: Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+    font-family: Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+  }
+
+  body {
+    background-color: #ffffff;
+    transition: background 0.4s ease;
+  }
+
+  body.dark {
+    background-color: #202123;
+    transition: background 0.4s ease;
+  }
 </style>

@@ -14,25 +14,52 @@
 
 <template>
   <div class="wrapper">
-    <img src="../assets/logos/logo-light.svg" alt="logo" class="logo">
+    <theme class="theme" />
+
+    <img src="../assets/logos/logo-light.svg" alt="logo" class="logo" v-if="theme === 'light'">
+    <img src="../assets/logos/logo-dark.svg" alt="logo" class="logo" v-else>
 
     <div class="search-bar">
       <input type="text" placeholder="Where do you want to go?" class="search" v-model="search_text">
 
       <a class="search-button" @click="search">
-        <img src="../assets/search.svg" alt="search" class="search-icon">
+        <img src="../assets/search-light.svg" alt="search" class="search-icon" v-if="theme === 'light'">
+        <img src="../assets/search-dark.svg" alt="search" class="search-icon" v-else>
       </a>
     </div>
   </div>
 </template>
 
 <script>
+import Theme from './Theme.vue'
+
 export default {
   name: 'Search',
+  components: {
+    Theme
+  },
   data() {
     return {
-      search_text: ''
+      search_text: '',
+      theme: 'light'
     }
+  },
+  mounted() {
+    if (localStorage.theme === 'dark') {
+      this.theme = 'dark'
+      document.getElementsByClassName('search-bar')[0].classList.add('dark')
+    }
+
+    this.$root.$on('theme-changed', (theme) => {
+      localStorage.theme = theme
+      this.theme = theme
+      
+      if (theme === 'dark') {
+        document.getElementsByClassName('search-bar')[0].classList.add('dark')
+      } else {
+        document.getElementsByClassName('search-bar')[0].classList.remove('dark')
+      }
+    })
   },
   methods: {
     search() {
@@ -61,6 +88,12 @@ export default {
     gap: 50px;
   }
 
+  .theme {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+  }
+
   .search-bar {
     display: flex;
     flex-direction: row;
@@ -80,7 +113,21 @@ export default {
 
     font-size: 16px;
     font-weight: 300;
+
     color: #333333;
+    background-color: transparent;
+  }
+
+  .search-bar > input:focus,
+  .search-bar > input:active,
+  .search-bar > input:hover,
+  .search-bar > input:focus-within {
+    outline: none;
+  }
+
+  .search-bar.dark > input {
+    border-color: #4B4B4B;
+    color: #ffffff;
   }
 
   .search-bar > input::placeholder,
@@ -88,6 +135,13 @@ export default {
   .search-bar > input::-moz-placeholder,
   .search-bar > input:-ms-input-placeholder {
     color: #B8B8B8;
+  }
+
+  .search-bar.dark > input::placeholder,
+  .search-bar.dark > input::-webkit-input-placeholder,
+  .search-bar.dark > input::-moz-placeholder,
+  .search-bar.dark > input:-ms-input-placeholder {
+    color: #8F8F8F;
   }
 
   .search-bar > a {
