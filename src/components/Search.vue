@@ -13,7 +13,7 @@
 // limitations under the License.
 
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="type !== 'query'">
     <theme class="theme" />
 
     <img src="../assets/logos/logo-light.svg" alt="logo" class="logo" v-if="theme === 'light'">
@@ -28,13 +28,30 @@
       </a>
     </div>
   </div>
+
+  <div class="wrapper-query" v-else>
+    <img src="../assets/logos/logo-symbol-light.svg" alt="logo" class="logo-query" v-if="theme === 'light'">
+    <img src="../assets/logos/logo-symbol-dark.svg" alt="logo" class="logo-query" v-else>
+
+    <div class="search-bar query">
+      <input type="text" placeholder="Where do you want to go?" class="search-query" v-model="search_text">
+
+      <a class="search-button" @click="search">
+        <img src="../assets/search-light.svg" alt="search" class="search-icon-query" v-if="theme === 'light'">
+        <img src="../assets/search-dark.svg" alt="search" class="search-icon-query" v-else>
+      </a>
+    </div>
+  </div>
 </template>
 
 <script>
 import Theme from './Theme.vue'
 
 export default {
-  name: 'Search',
+  name: 'Home',
+  props: {
+    type: String
+  },
   components: {
     Theme
   },
@@ -90,10 +107,13 @@ export default {
 
   .theme {
     position: absolute;
+    
     top: 30px;
     right: 30px;
   }
+</style>
 
+<style>
   .search-bar {
     display: flex;
     flex-direction: row;
@@ -130,21 +150,45 @@ export default {
     color: #ffffff;
   }
 
-  .search-bar > input::placeholder,
-  .search-bar > input::-webkit-input-placeholder,
-  .search-bar > input::-moz-placeholder,
-  .search-bar > input:-ms-input-placeholder {
-    color: #B8B8B8;
+  .wrapper-query {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
   }
 
-  .search-bar.dark > input::placeholder,
-  .search-bar.dark > input::-webkit-input-placeholder,
-  .search-bar.dark > input::-moz-placeholder,
-  .search-bar.dark > input:-ms-input-placeholder {
+  .search-bar-query > input::placeholder {
+    color: #c4c4c4;
+  }
+
+  .search-bar-query.dark > input::placeholder {
     color: #8F8F8F;
   }
 
-  .search-bar > a {
+  .search-bar-query > a {
     cursor: pointer;
+  }
+
+  .logo-query {
+    width: 38px;
+    height: 38px;
+  }
+
+  .search-bar.query {
+    height: 30px;
+
+    margin-left: 30px;
+  }
+
+  .search-bar.query > input {
+    padding: 5px 15px;
+
+    font-size: 14px;
+  }
+
+  .search-bar.query > a > img {
+    height: 30px;
+    width: 30px;
   }
 </style>

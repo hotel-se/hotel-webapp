@@ -13,15 +13,34 @@
 // limitations under the License.
 
 <template>
-  <div id="app">
-    <router-view />
+  <div class="wrapper">
+    <div class="header">
+      <search type="query" />
+      <theme />
+    </div>
+
+    <div class="content">
+      <Map />
+    </div>
   </div>
 </template>
 
 <script>
+import Theme from '../components/Theme.vue'
+import Search from '../components/Search.vue'
+import Map from '../components/Map.vue'
+
 export default {
-  name: 'App',
-  data () {
+  name: 'Results',
+  props: {
+    query: String
+  },
+  components: {
+    Theme,
+    Search,
+    Map
+  },
+  data() {
     return {
       theme: 'light'
     }
@@ -29,7 +48,7 @@ export default {
   mounted() {
     if (localStorage.theme === 'dark') {
       this.theme = 'dark'
-      document.body.className = 'dark'
+      document.getElementsByClassName('search-bar')[0].classList.add('dark')
     }
 
     this.$root.$on('theme-changed', (theme) => {
@@ -37,42 +56,37 @@ export default {
       this.theme = theme
       
       if (theme === 'dark') {
-        document.body.className = 'dark'
+        document.getElementsByClassName('search-bar')[0].classList.add('dark')
       } else {
-        document.body.className = ''
+        document.getElementsByClassName('search-bar')[0].classList.remove('dark')
       }
     })
-  },
-  watch: {
-    theme(new_theme) {
-      localStorage.theme = new_theme
-    }
-  },
+  }
 }
 </script>
 
-<style>
-  #app {
+<style scoped>
+  .wrapper {
     display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    /* justify-content: center; */
+
     height: 100vh;
     width: 100vw;
-
-    margin: -10px;
-
-    font-family: Roboto, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
   }
 
-  body {
-    background-color: #ffffff;
-    transition: background 0.4s ease;
-  }
+  .header {
+    display: flex;
+    flex-direction: row;
 
-  body.dark {
-    background-color: #202123;
-    transition: background 0.4s ease;
+    margin: 30px;
+
+    width: -webkit-fill-available !important;
+    width: -moz-available !important;
+
+    align-items: center;
+    justify-content: space-between;
   }
 </style>
