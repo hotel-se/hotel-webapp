@@ -15,8 +15,8 @@
 <template>
   <div>
     <a href="#" @click="toggleTheme">
-      <img src="../assets/icons/sun-fill.svg" v-if="theme === 'dark'" />
-      <img src="../assets/icons/moon-fill.svg" v-else />
+      <img src="../assets/icons/theme/sun-fill.svg" v-if="theme === 'dark'" />
+      <img src="../assets/icons/theme/moon-fill.svg" v-else />
     </a>
   </div>
 </template>
