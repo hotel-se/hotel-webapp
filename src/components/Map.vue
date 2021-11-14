@@ -2,8 +2,8 @@
   <div class="wrapper">
     <kendo-map
       class="map"
-      :center="[30.268107, -97.744821]"
-      :zoom="5"
+      :center="center"
+      :zoom="13"
       :controls-navigator="false"
       :key="component_key"
     >
@@ -14,15 +14,20 @@
         :subdomains="['a', 'b', 'c']"
       />
 
-      <kendo-map-marker :shape="shape" :location="[30, -97.744821]" />
-      <kendo-map-marker :shape="shape" :location="[32, -97.744821]" />
-      <kendo-map-marker :shape="shape" :location="[34, -97.744821]" />
+      <kendo-map-marker v-for="hotel in hotels" :key="hotel.id"
+                        :shape="shape"
+                        :location="[hotel.coordinates.latitude, hotel.coordinates.longitude]" />
     </kendo-map>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'Map',
+  props: {
+    hotels: Array,
+    center: Array
+  },
   data() {
     return {
       component_key: 0,

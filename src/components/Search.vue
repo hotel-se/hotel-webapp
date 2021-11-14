@@ -20,7 +20,7 @@
     <img src="../assets/logos/logo-dark.svg" alt="logo" class="logo" v-else>
 
     <div class="search-bar">
-      <input type="text" placeholder="Where do you want to go?" class="search" v-model="search_text">
+      <input type="text" placeholder="Where do you want to go?" class="search" v-model="search_text" v-on:keyup.enter="search">
 
       <a class="search-button" @click="search">
         <img src="../assets/search-light.svg" alt="search" class="search-icon" v-if="theme === 'light'">
@@ -30,11 +30,13 @@
   </div>
 
   <div class="wrapper-query" v-else>
-    <img src="../assets/logos/logo-symbol-light.svg" alt="logo" class="logo-query" v-if="theme === 'light'">
-    <img src="../assets/logos/logo-symbol-dark.svg" alt="logo" class="logo-query" v-else>
+    <a href="/">
+      <img src="../assets/logos/logo-symbol-light.svg" alt="logo" class="logo-query" v-if="theme === 'light'">
+      <img src="../assets/logos/logo-symbol-dark.svg" alt="logo" class="logo-query" v-else>
+    </a>
 
     <div class="search-bar query">
-      <input type="text" placeholder="Where do you want to go?" class="search-query" v-model="search_text">
+      <input type="text" placeholder="Where do you want to go?" class="search-query" v-model="search_text" v-on:keyup.enter="search">
 
       <a class="search-button" @click="search">
         <img src="../assets/search-light.svg" alt="search" class="search-icon-query" v-if="theme === 'light'">
@@ -65,6 +67,8 @@ export default {
     if (localStorage.theme === 'dark') {
       this.theme = 'dark'
       document.getElementsByClassName('search-bar')[0].classList.add('dark')
+
+      this.set_text()
     }
 
     this.$root.$on('theme-changed', (theme) => {
@@ -76,16 +80,34 @@ export default {
       } else {
         document.getElementsByClassName('search-bar')[0].classList.remove('dark')
       }
+
+      this.set_text()
     })
+
+    this.set_text()
   },
   methods: {
-    search() {
-      // this.$router.push({
-      //   name: 'SearchResults',
-      //   params: {
-      //     search: this.search_text
-      //   }
-      // })
+    async search() {
+      if (this.search_text.length > 0) {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${this.search_text}&format=geojson`)
+        let coords = await response.json()
+        coords = coords['features'][0]['geometry']['coordinates']
+
+        let query = coords ? `q=${this.search_text}&lat=${coords[1]}&lon=${coords[0]}` : `q=${this.search_text}`
+
+        this.$router.push({
+          name: 'Results',
+          params: {
+            query: query
+          }
+        })
+      }
+    },
+    set_text() {
+      if (this.$route.name === 'Results') {
+        let query = this.$route.path.split('/q=')[1].replace(/%20/g, ' ').split('&')[0]
+        document.querySelector('.search-query').value = query
+      }
     }
   }
 }
@@ -143,6 +165,10 @@ export default {
   .search-bar > input:hover,
   .search-bar > input:focus-within {
     outline: none;
+  }
+
+  .search-bar > a {
+    cursor: pointer;
   }
 
   .search-bar.dark > input {

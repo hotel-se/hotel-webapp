@@ -20,7 +20,11 @@
     </div>
 
     <div class="content">
-      <Map />
+      <Map v-if="ready" :hotels="hotels_reduced" :center="center" />
+
+      <div v-for="hotel in hotels_reduced" :key="hotel.id" class="hotel">
+        {{hotel.name}}
+      </div>
     </div>
   </div>
 </template>
@@ -42,10 +46,15 @@ export default {
   },
   data() {
     return {
-      theme: 'light'
+      theme: 'light',
+      hotels: [],
+      hotels_reduced: [],
+      found: 0,
+      center: [0, 0],
+      ready: false
     }
   },
-  mounted() {
+  async mounted() {
     if (localStorage.theme === 'dark') {
       this.theme = 'dark'
       document.getElementsByClassName('search-bar')[0].classList.add('dark')
@@ -61,6 +70,40 @@ export default {
         document.getElementsByClassName('search-bar')[0].classList.remove('dark')
       }
     })
+
+    this.loadHotels()
+  },
+  methods: {
+    computeCenter() {
+      let max_lat = Number.NEGATIVE_INFINITY
+      let min_lat = Number.POSITIVE_INFINITY
+      let max_lng = Number.NEGATIVE_INFINITY
+      let min_lng = Number.POSITIVE_INFINITY
+
+      for (let hotel of this.hotels) {
+        max_lat = Math.max(max_lat, hotel.coordinates.latitude)
+        min_lat = Math.min(min_lat, hotel.coordinates.latitude)
+        max_lng = Math.max(max_lng, hotel.coordinates.longitude)
+        min_lng = Math.min(min_lng, hotel.coordinates.longitude)
+      }
+
+      return [(max_lat + min_lat) / 2, (max_lng + min_lng) / 2]
+    },
+    async loadHotels() {
+      await this.$store.dispatch('fetchHotels', this.query.split('q=')[1])
+      this.hotels = this.$store.state.hotels
+      this.found = this.$store.state.found
+
+      this.hotels_reduced = this.hotels
+
+      if (this.hotels.length > 10) {
+        this.hotels_reduced = this.hotels.slice(0, 20)
+      }
+
+      this.center = this.computeCenter()
+
+      this.ready = true
+    }
   }
 }
 </script>
@@ -71,7 +114,7 @@ export default {
     flex-direction: column;
 
     align-items: center;
-    
+
     width: 100vw;
   }
 
