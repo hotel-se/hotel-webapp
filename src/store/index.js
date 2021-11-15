@@ -42,6 +42,7 @@ export default new Vuex.Store({
           id: hotel.id,
           name: hotel.name ? hotel.name : null,
           address: hotel.address ? hotel.address : null,
+          description: hotel.description ? hotel.description : null,
           phone_number: hotel.phone_number ? hotel.phone_number : null,
           rating: {
             score: hotel['rating.score'] ? hotel['rating.score'] : null,

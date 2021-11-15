@@ -52,14 +52,15 @@ import Theme from './Theme.vue'
 export default {
   name: 'Home',
   props: {
-    type: String
+    type: String,
+    query: String
   },
   components: {
     Theme
   },
   data() {
     return {
-      search_text: '',
+      search_text: this.query,
       theme: 'light'
     }
   },
@@ -80,7 +81,7 @@ export default {
       } else {
         document.getElementsByClassName('search-bar')[0].classList.remove('dark')
       }
-
+      
       this.set_text()
     })
 
@@ -94,6 +95,7 @@ export default {
         coords = coords['features'][0]['geometry']['coordinates']
 
         let query = coords ? `q=${this.search_text}&lat=${coords[1]}&lon=${coords[0]}` : `q=${this.search_text}`
+        this.$root.$emit('search', query)
 
         this.$router.push({
           name: 'Results',
