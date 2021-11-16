@@ -30,7 +30,10 @@
 
       <kendo-map-marker v-for="hotel in hotels" :key="hotel.id"
                         :shape="shape"
-                        :location="[hotel.coordinates.latitude, hotel.coordinates.longitude]" />
+                        :location="[hotel.coordinates.latitude, hotel.coordinates.longitude]"
+                        :tooltip-content="markerClick(hotel)"
+                        :tooltip-height="70"
+                        :tooltip-position="'top'" />
     </kendo-map>
   </div>
 </template>
@@ -81,6 +84,12 @@ export default {
   methods: {
     forceRerender() {
       this.component_key += 1;
+    },
+    markerClick(hotel) {
+      return `<div class="marker-tooltip">
+                <h3>${hotel.name}</h3>
+                <p>${hotel.address}</p>
+              </div>`
     }
   }
 };
@@ -95,12 +104,26 @@ export default {
     background-image: url('../assets/icons/map/pin-light.svg');
     background-repeat: no-repeat;
     background-position: center;
+
+    /* margin: 0 !important; */
+
+    width: 20px !important;
+    height: 30px !important;
   }
 
   .k-i-marker-dark {
     background-image: url('../assets/icons/map/pin-dark.svg');
     background-repeat: no-repeat;
     background-position: center;
+
+    margin: 0 !important;
+
+    width: 20px !important;
+    height: 30px !important;
+  }
+
+  .marker-tooltip {
+    font-size: 10px;
   }
 </style>
 

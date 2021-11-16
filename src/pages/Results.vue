@@ -19,11 +19,26 @@
       <theme />
     </div>
 
-    <div class="content">
+    <div class="content" v-if="hotels.length !== 0">
       <Map v-if="ready" :hotels="hotels_reduced" :center="center" :key="component_key" />
       
       <div class="hotels">
         <result :result="hotel" v-for="hotel in hotels_reduced" :key="hotel.id" />
+      </div>
+    </div>
+
+    <div class="content" v-else>
+      <div class="no-results" :class="theme === 'dark' ? 'dark' : ''">
+        <p>Your search - <b>{{ this.$route.path.split('/q=')[1].replace(/%20/g, ' ').split('&')[0] }}</b> - did
+        not match any documents.</p>
+        
+        <p>Suggestions:</p>
+
+        <ul>
+          <li>Make sure all words are spelled correctly.</li>
+          <li>Write places names in English.</li>
+          <li>Places must be in Italy or Switzerland.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -148,11 +163,15 @@ export default {
     display: flex;
     flex-direction: column;
 
-    margin-left: 30px;
-    margin-right: 30px;
+    width: 70% !important;
+  }
 
-    width: -webkit-fill-available !important;
-    width: -moz-available !important;
+  .no-results {
+    text-align: left;
+  }
+
+  .no-results.dark {
+    color: #bdc1c6;
   }
 
   .hotels {
