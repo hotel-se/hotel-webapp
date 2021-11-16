@@ -23,7 +23,7 @@
       <Map v-if="ready" :hotels="hotels_reduced" :center="center" :key="component_key" />
       
       <div class="hotels">
-        <result :result="hotel" v-for="hotel in hotels_reduced" :key="hotel.id" />
+        <result :result="hotel" v-for="hotel in hotels" :key="hotel.id" />
       </div>
     </div>
 
@@ -41,6 +41,8 @@
         </ul>
       </div>
     </div>
+
+    <paging :total="pages" :query="this.$route.path" />
   </div>
 </template>
 
@@ -49,6 +51,7 @@ import Theme from '../components/Theme.vue'
 import Search from '../components/Search.vue'
 import Map from '../components/Map.vue'
 import Result from '../components/Result.vue'
+import Paging from '../components/Paging.vue'
 
 export default {
   name: 'Results',
@@ -59,14 +62,15 @@ export default {
     Theme,
     Search,
     Map,
-    Result
+    Result,
+    Paging
   },
   data() {
     return {
       theme: 'light',
       hotels: [],
+      pages: 0,
       hotels_reduced: [],
-      found: 0,
       center: [0, 0],
       ready: false,
       component_key: 0
@@ -112,24 +116,32 @@ export default {
       return [(max_lat + min_lat) / 2, (max_lng + min_lng) / 2]
     },
     async loadHotels(query_alt='') {
+      let offset = (Number(this.$route.path.split('&p=')[1]) - 1) * 25 || 0
+
       if (query_alt === '') {
-        await this.$store.dispatch('fetchHotels', this.query.split('q=')[1])
+        await this.$store.dispatch('fetchHotels', [this.query.split('q=')[1], offset])
       } else {
-        await this.$store.dispatch('fetchHotels', query_alt)
+        await this.$store.dispatch('fetchHotels', [query_alt, offset])
       }
       
       this.hotels = this.$store.state.hotels
-      this.found = this.$store.state.found
 
-      this.hotels_reduced = this.hotels
+      let found = this.$store.state.found
+      this.pages = Math.ceil(found / 25)
 
-      if (this.hotels.length > 20) {
-        this.hotels_reduced = this.hotels.slice(0, 20)
-      }
+      this.hotels_reduced = this.$store.state.hotels_top20
+      console.log(this.hotels)
+      console.log(this.hotels_reduced)
 
       this.center = this.computeCenter()
       this.ready = true
       this.component_key += 1
+      window.scrollTo(0,0)
+    }
+  },
+  watch: {
+    '$route'() {
+      this.loadHotels()
     }
   }
 }
