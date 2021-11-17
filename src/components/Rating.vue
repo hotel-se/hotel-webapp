@@ -15,6 +15,7 @@
 <template>
   <div class="wrapper" v-if="theme === 'light'">
     <img src="../assets/icons/results/star-fill-light.svg" v-for="i in filled" :key="i" />
+    <img src="../assets/icons/results/star-half-light.svg" v-if="`${n}`.includes('.5')" :key="20" />
     <img src="../assets/icons/results/star-outline-light.svg" v-for="i in empty" :key="i+5" />
   </div>
 
@@ -33,7 +34,7 @@ export default {
   data() {
     return {
       filled: Math.floor(this.n),
-      empty: 5 - Math.floor(this.n),
+      empty: 5 - Math.ceil(this.n),
       theme: 'light'
     }
   },
