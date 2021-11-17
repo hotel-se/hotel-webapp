@@ -21,6 +21,7 @@
 
   <div class="wrapper" v-else>
     <img src="../assets/icons/results/star-fill-dark.svg" v-for="i in filled" :key="i" />
+    <img src="../assets/icons/results/star-half-dark.svg" v-if="`${n}`.includes('.5')" :key="20" />
     <img src="../assets/icons/results/star-outline-dark.svg" v-for="i in empty" :key="i+5" />
   </div>
 </template>
