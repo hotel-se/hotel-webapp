@@ -21,7 +21,15 @@
 
     <div class="content" v-if="hotels.length !== 0">
       <Map v-if="ready" :hotels="hotels_reduced" :center="center" :key="component_key" />
-      
+
+      <p class="timing" :class="theme === 'dark' ? 'dark' : ''" v-if="curr_page === 1">
+        Fetched {{ found }} hotels ({{ time }} seconds)
+      </p>
+
+      <p class="timing" :class="theme === 'dark' ? 'dark' : ''" v-else>
+        Page {{ curr_page }} of {{ found }} hotels ({{ time }} seconds)
+      </p>
+
       <div class="hotels">
         <result :result="hotel" v-for="hotel in hotels" :key="hotel.id" />
       </div>
@@ -73,10 +81,15 @@ export default {
       hotels_reduced: [],
       center: [0, 0],
       ready: false,
-      component_key: 0
+      component_key: 0,
+      time: 0,
+      found: 0,
+      curr_page: 1
     }
   },
   async mounted() {
+    this.curr_page = Number(this.$route.path.split('&p=')[1]) || 1
+
     if (localStorage.theme === 'dark') {
       this.theme = 'dark'
       document.getElementsByClassName('search-bar')[0].classList.add('dark')
@@ -127,11 +140,11 @@ export default {
       this.hotels = this.$store.state.hotels
 
       let found = this.$store.state.found
+      this.found = found
       this.pages = Math.ceil(found / 25)
 
       this.hotels_reduced = this.$store.state.hotels_top20
-      console.log(this.hotels)
-      console.log(this.hotels_reduced)
+      this.time = this.$store.state.time
 
       this.center = this.computeCenter()
       this.ready = true
@@ -142,6 +155,7 @@ export default {
   watch: {
     '$route'() {
       this.loadHotels()
+      this.curr_page = Number(this.$route.path.split('&p=')[1]) || 1
     }
   }
 }
@@ -194,5 +208,17 @@ export default {
     margin-bottom: 40px;
 
     gap: 38px;
+  }
+
+  .timing {
+    margin-bottom: -10px;
+    
+    text-align: left;
+    font-size: 14px;
+    color: #747474;
+  }
+
+  .timing.dark {
+    color: #9B9B9B;
   }
 </style>

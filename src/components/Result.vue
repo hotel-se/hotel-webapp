@@ -57,7 +57,7 @@ export default {
       score: this.result.rating.score,
       theme: 'light'
     }
-  },
+  }, 
   mounted() {
     if (localStorage.theme === 'dark') {
       this.theme = 'dark'

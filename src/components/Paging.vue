@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="pages" :key="component_key">
+    <div class="pages" :class="theme === 'dark' ? 'dark' : ''" :key="component_key">
       <div class="page" :class="`${current_page}` === `${page}` ? 'active' : ''" v-for="page in total" :key="page">
         <a href="#" @click.prevent="changePage(page)">{{ page }}</a>
       </div>
@@ -18,11 +18,20 @@ export default {
   data() {
     return {
       currentPage: 1,
-      component_key: 0
+      component_key: 0,
+      theme: 'light'
     };
   },
   mounted() {
-    this.current_page = this.getCurrentPage();
+    this.current_page = this.getCurrentPage()
+
+    if (localStorage.theme === 'dark') {
+      this.theme = 'dark'
+    }
+
+    this.$root.$on('theme-changed', (theme) => {
+      this.theme = theme
+    })
   },
   methods: {
     changePage(page) {
@@ -83,13 +92,25 @@ export default {
     border-radius: 5px;
   }
 
+  .dark > .active {
+    background-color: #ffffff;
+  }
+
   .page > a {
     text-decoration: none;
 
     color: #000000;
   }
 
-  .page.active > a {
-    color: #fff;
+  .dark > .page > a {
+    color: #ffffff;
+  }
+
+  .active > a {
+    color: #ffffff;
+  }
+
+  .dark > .active > a {
+    color: #000000;
   }
 </style>

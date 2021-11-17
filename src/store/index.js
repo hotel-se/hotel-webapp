@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     hotels: [],
     found: 0,
-    hotels_top20: []
+    hotels_top20: [],
+    time: 0
   },
   mutations: {
     setHotels(state, newHotels) {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
     },
     setFound(state, newFound) {
       state.found = newFound;
+    },
+    setTime(state, newTime) {
+      state.time = newTime;
     }
   },
   actions: {
@@ -26,7 +30,10 @@ export default new Vuex.Store({
       const lat = query[0].split('&lat=')[1].split('&')[0]
       const lon = query[0].split('&lon=')[1].split('&')[0]
 
+      var startTime = performance.now()
       const response = await fetch(`http://localhost:8983/solr/hotels/query?d=5&fq=%7B!geofilt%7D&pt=${lat}%2C${lon}&q=${name}&rows=25&sfield=coordinates&sort=geodist()%20asc&start=${query[1]}`)
+      var endTime = performance.now()
+
       const response_top20 = await fetch(`http://localhost:8983/solr/hotels/query?d=5&fq=%7B!geofilt%7D&pt=${lat}%2C${lon}&q=${name}&rows=20&sfield=coordinates&sort=geodist()%20asc`)
 
       let hotels = await response.json()
@@ -97,6 +104,8 @@ export default new Vuex.Store({
       await Promise.all(hotels_top20).then(hotels_top20 => {
         context.commit('setHotelsTop20', hotels_top20)
       })
+
+      context.commit('setTime', ((endTime - startTime) / 1000).toFixed(2))
     }
   }
 })
