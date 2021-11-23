@@ -105,8 +105,6 @@ export default {
     background-repeat: no-repeat;
     background-position: center;
 
-    /* margin: 0 !important; */
-
     width: 20px !important;
     height: 30px !important;
   }
@@ -115,8 +113,6 @@ export default {
     background-image: url('../assets/icons/map/pin-dark.svg');
     background-repeat: no-repeat;
     background-position: center;
-
-    margin: 0 !important;
 
     width: 20px !important;
     height: 30px !important;
